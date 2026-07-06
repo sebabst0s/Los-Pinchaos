@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fdf8ec;
+  --foreground: #0f3d3e;
 }
 
 @theme inline {
@@ -14,13 +14,35 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0b2a2b;
+    --foreground: #fdf8ec;
   }
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(180deg, var(--background) 0%, var(--background) 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
+
+@keyframes splash-float {
+  from {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  to {
+    transform: translate(var(--float-x, 1rem), var(--float-y, -1rem))
+      rotate(var(--float-r, 6deg));
+  }
+}
+
+.splash-float-avatar {
+  animation: splash-float var(--float-dur, 6s) ease-in-out var(--float-delay, 0s)
+    infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-float-avatar {
+    animation: none;
+  }
+}
+

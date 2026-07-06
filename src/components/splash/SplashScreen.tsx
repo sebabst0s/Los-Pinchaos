@@ -7,6 +7,7 @@ import { es } from "date-fns/locale";
 import { createClient } from "@/lib/supabase/client";
 import { GROUP_NAME, DESTINATION, TRIP_DAYS, TRIP_START } from "@/lib/constants";
 import { FloatingAvatars } from "@/components/splash/FloatingAvatars";
+import { playSound } from "@/lib/media";
 import type { Database } from "@/lib/database.types";
 
 const fredoka = Fredoka({ subsets: ["latin"], weight: ["600", "700"] });
@@ -38,8 +39,8 @@ export function SplashScreen() {
     <div className="fixed inset-0 z-[60] overflow-hidden bg-gradient-to-br from-cyan-200 via-amber-50 to-orange-200 dark:from-cyan-950 dark:via-cyan-900 dark:to-orange-950">
       <FloatingAvatars participants={participants} />
 
-      <div className="relative z-10 flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
-        <div className="rounded-3xl bg-white/40 px-6 py-8 shadow-xl backdrop-blur-md dark:bg-black/20 sm:px-10 sm:py-10">
+      <div className="pointer-events-none relative z-10 flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
+        <div className="pointer-events-auto rounded-3xl bg-white/40 px-6 py-8 shadow-xl backdrop-blur-md dark:bg-black/20 sm:px-10 sm:py-10">
           <h1
             className={`${fredoka.className} text-4xl text-cyan-900 drop-shadow-sm dark:text-cyan-50 sm:text-6xl`}
           >
@@ -49,7 +50,10 @@ export function SplashScreen() {
             {dateRange} · {destinationShort} {TRIP_START.getFullYear()}
           </p>
           <button
-            onClick={() => setDismissed(true)}
+            onClick={() => {
+              playSound("/audio/continuar.mp3");
+              setDismissed(true);
+            }}
             className="mt-6 rounded-full bg-orange-500 px-8 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-orange-600 active:scale-95 sm:text-base"
           >
             Continuar 🌊

@@ -40,8 +40,8 @@ function mulberry32(seed: number) {
 // Límites (en % de viewport) del área utilizable para las fotos flotantes,
 // y la zona central "segura" que ocupa la tarjeta con el título y el botón.
 // Las fotos se distribuyen en el marco que queda alrededor de esa zona.
-const OUTER = { xMin: 6, xMax: 94, yMin: 8, yMax: 90 };
-const CARD_SAFE_ZONE = { xMin: 18, xMax: 82, yMin: 24, yMax: 76 };
+const OUTER = { xMin: 15, xMax: 85, yMin: 14, yMax: 86 };
+const CARD_SAFE_ZONE = { xMin: 20, xMax: 80, yMin: 24, yMax: 76 };
 
 // Recorre el perímetro del marco (arriba → derecha → abajo → izquierda)
 // según t (0 a 1) y devuelve una posición dentro de esa banda, con un
@@ -184,7 +184,7 @@ export function FloatingAvatars({
 
   return (
     <>
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div className="pointer-events-none absolute inset-0 z-20" aria-hidden="true">
         {items.map((item) => {
           const media = mediaByParticipant[item.participant.id];
           const interactive = Boolean(media?.audioSrc || media?.videoSrc);

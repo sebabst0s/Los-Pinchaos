@@ -27,10 +27,11 @@ body {
 
 @keyframes splash-float {
   from {
-    transform: translate(0, 0) rotate(0deg);
+    transform: translate(-50%, -50%) translate(0, 0) rotate(0deg);
   }
   to {
-    transform: translate(var(--float-x, 1rem), var(--float-y, -1rem))
+    transform: translate(-50%, -50%)
+      translate(var(--float-x, 1rem), var(--float-y, -1rem))
       rotate(var(--float-r, 6deg));
   }
 }
@@ -43,6 +44,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .splash-float-avatar {
     animation: none;
+    transform: translate(-50%, -50%);
   }
 }
 

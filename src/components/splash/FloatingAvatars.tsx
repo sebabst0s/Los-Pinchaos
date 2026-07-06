@@ -37,6 +37,55 @@ function mulberry32(seed: number) {
   };
 }
 
+// Límites (en % de viewport) del área utilizable para las fotos flotantes,
+// y la zona central "segura" que ocupa la tarjeta con el título y el botón.
+// Las fotos se distribuyen en el marco que queda alrededor de esa zona.
+const OUTER = { xMin: 6, xMax: 94, yMin: 8, yMax: 90 };
+const CARD_SAFE_ZONE = { xMin: 18, xMax: 82, yMin: 24, yMax: 76 };
+
+// Recorre el perímetro del marco (arriba → derecha → abajo → izquierda)
+// según t (0 a 1) y devuelve una posición dentro de esa banda, con un
+// desplazamiento aleatorio hacia adentro/afuera de la banda para que no
+// se vea como una fila perfectamente alineada.
+function perimeterPosition(t: number, rng: () => number) {
+  const topLen = OUTER.xMax - OUTER.xMin;
+  const rightLen = CARD_SAFE_ZONE.yMax - CARD_SAFE_ZONE.yMin;
+  const bottomLen = OUTER.xMax - OUTER.xMin;
+  const leftLen = CARD_SAFE_ZONE.yMax - CARD_SAFE_ZONE.yMin;
+  const total = topLen + rightLen + bottomLen + leftLen;
+
+  let d = (((t % 1) + 1) % 1) * total;
+
+  if (d < topLen) {
+    return {
+      left: OUTER.xMin + d,
+      top: OUTER.yMin + rng() * (CARD_SAFE_ZONE.yMin - OUTER.yMin),
+    };
+  }
+  d -= topLen;
+
+  if (d < rightLen) {
+    return {
+      left: CARD_SAFE_ZONE.xMax + rng() * (OUTER.xMax - CARD_SAFE_ZONE.xMax),
+      top: CARD_SAFE_ZONE.yMin + d,
+    };
+  }
+  d -= rightLen;
+
+  if (d < bottomLen) {
+    return {
+      left: OUTER.xMax - d,
+      top: CARD_SAFE_ZONE.yMax + rng() * (OUTER.yMax - CARD_SAFE_ZONE.yMax),
+    };
+  }
+  d -= bottomLen;
+
+  return {
+    left: OUTER.xMin + rng() * (CARD_SAFE_ZONE.xMin - OUTER.xMin),
+    top: CARD_SAFE_ZONE.yMax - d,
+  };
+}
+
 // Media asociada a un participante para el easter egg (si existe el archivo).
 type ParticipantMedia = { audioSrc?: string; videoSrc?: string };
 
@@ -87,20 +136,12 @@ export function FloatingAvatars({
     const count = participants.length;
     if (count === 0) return [];
 
-    const cols = Math.max(1, Math.ceil(Math.sqrt(count * 1.3)));
-    const rows = Math.ceil(count / cols);
-
     return participants.map((p, i) => {
       const rng = mulberry32(hashSeed(p.id));
-      const col = i % cols;
-      const row = Math.floor(i / cols);
-      const baseLeft = ((col + 0.5) / cols) * 100;
-      const baseTop = ((row + 0.5) / rows) * 100;
-      const jitterX = (rng() - 0.5) * (60 / cols);
-      const jitterY = (rng() - 0.5) * (50 / rows);
-
-      const left = Math.min(92, Math.max(6, baseLeft + jitterX));
-      const top = Math.min(86, Math.max(8, baseTop + jitterY));
+      // Reparte a los participantes uniformemente alrededor del perímetro,
+      // con un pequeño desfase para que no se vean en fila perfecta.
+      const t = (i + 0.5) / count + (rng() - 0.5) * (0.6 / count);
+      const { left, top } = perimeterPosition(t, rng);
       const scale = 0.75 + rng() * 0.6;
       const duration = 5 + rng() * 5;
       const delay = -rng() * duration;

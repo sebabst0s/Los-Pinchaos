@@ -155,6 +155,23 @@ export function ShoppingModule() {
     }
   }
 
+  async function handleDelete(item: ShoppingItem) {
+    if (!confirm(`¿Eliminar "${item.name}" de la lista?`)) return;
+    const supabase = createClient();
+
+    if (item.expense_id) {
+      const shouldDeleteExpense = confirm(
+        "Este ítem tiene un gasto asociado. ¿Quieres eliminarlo también?"
+      );
+      if (shouldDeleteExpense) {
+        await supabase.from("expenses").delete().eq("id", item.expense_id);
+      }
+    }
+
+    await supabase.from("shopping_items").delete().eq("id", item.id);
+    fetchAll();
+  }
+
   if (loading) {
     return <p className="text-center text-sm text-cyan-800/60">Cargando lista...</p>;
   }
@@ -177,6 +194,7 @@ export function ShoppingModule() {
         participantById={participantById}
         expenseById={expenseById}
         onToggle={handleToggle}
+        onDelete={handleDelete}
       />
 
       {pendingItem && (

@@ -15,11 +15,13 @@ export function ShoppingList({
   participantById,
   expenseById,
   onToggle,
+  onDelete,
 }: {
   items: ShoppingItem[];
   participantById: Map<string, Participant>;
   expenseById: Map<string, Expense>;
   onToggle: (item: ShoppingItem) => void;
+  onDelete: (item: ShoppingItem) => void;
 }) {
   if (items.length === 0) {
     return (
@@ -112,6 +114,15 @@ export function ShoppingList({
                         </p>
                       )}
                     </div>
+
+                    <button
+                      onClick={() => onDelete(item)}
+                      aria-label="Eliminar ítem"
+                      title="Eliminar de la lista"
+                      className="mt-0.5 shrink-0 text-cyan-800/40 hover:text-red-500 dark:text-cyan-200/40"
+                    >
+                      ✕
+                    </button>
                   </li>
                 );
               })}
